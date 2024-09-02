@@ -3,26 +3,27 @@ import {
   CanActivate,
   ExecutionContext,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from 'src/user';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { user } = context.switchToHttp().getRequest();
+    try {
+      const { user } = context.switchToHttp().getRequest();
 
-    if (user.role !== UserRole.admin) {
-      throw new HttpException(
-        {
-          status: 403,
-          message: 'Only Admin have permission to access this resource',
-        },
-        403,
-      );
+      if (user.role !== 'ADMIN') {
+        throw new HttpException(
+          'Only Admin have permission to access this resource',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      return true;
+    } catch (error) {
+      throw error;
     }
-    return true;
   }
 }

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  BanRequestDto,
+  UserRequestDto,
   SignInRequestDto,
   SignInResponseDto,
   SignUpRequestDto,
@@ -18,7 +18,8 @@ import {
   UserResponseDto,
 } from './user.dto';
 import { UserService } from './user.service';
-import { AdminGuard } from 'src/guards/role.guard';
+import { AdminGuard } from 'src/guard/role.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User Management')
 @Controller('v1/user')
@@ -72,10 +73,10 @@ export class UserController {
     type: UserMessageResponseDto,
   })
   @ApiOperation({ summary: 'Ban user' })
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @Patch('/ban-user')
   async banUser(
-    @Body() req: BanRequestDto,
+    @Body() req: UserRequestDto,
   ): Promise<UserMessageResponseDto | void> {
     return await this.userService.banUser(req);
   }
@@ -86,10 +87,10 @@ export class UserController {
     type: UserMessageResponseDto,
   })
   @ApiOperation({ summary: 'Unban user' })
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @Patch('/unban-user')
   async unBanUser(
-    @Body() req: BanRequestDto,
+    @Body() req: UserRequestDto,
   ): Promise<UserMessageResponseDto | void> {
     return await this.userService.unBanUser(req);
   }
@@ -100,10 +101,10 @@ export class UserController {
     type: Array<UserResponseDto>,
   })
   @ApiOperation({ summary: 'Fetch all ban users' })
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @Get('/all-ban-users')
   async getManyBanUsers(): Promise<UserResponseDto[]> {
-    return this.userService.getManyBanUsers();
+    return this.userService.getManyBannedUsers();
   }
 
   @ApiResponse({
@@ -112,9 +113,9 @@ export class UserController {
     type: Array<UserResponseDto>,
   })
   @ApiOperation({ summary: 'Fetch all unban users' })
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @Get('/all-unban-users')
   async getManyUnbanUsers(): Promise<UserResponseDto[]> {
-    return this.userService.getManyUnbanUsers();
+    return this.userService.getManyUnbannedUsers();
   }
 }

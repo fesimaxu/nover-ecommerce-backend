@@ -1,24 +1,38 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
-import { Base } from './base.entity';
-import { ProductStatus } from 'src/product';
+import { ProductStatus } from 'src/domain/product/product.enum';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('product')
-export class Product extends Base {
+export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar' })
+  userId: string;
+
+  @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'decimal' })
   price: number;
 
   @Column({ type: 'varchar', nullable: true })
-  description: string;
+  description?: string;
 
-  @Column({ type: 'varchar' })
-  quantity: string;
+  @Column({ type: 'int' })
+  quantity: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: 'APPROVE' })
   status: ProductStatus;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }
