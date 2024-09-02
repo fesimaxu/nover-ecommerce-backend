@@ -17,11 +17,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "migration:run": "npm run typeorm migration:run -- -d ./libs/dal/src/typeorm/typeorm.config.ts",
+    "migration:generate": "npm run typeorm -- -d ./libs/dal/src/typeorm/typeorm.config.ts migration:generate ./libs/dal/src/migrations/$npm_config_name",
+    "migration:create": "npm run typeorm -- migration:create ./libs/dal/src/migrations/$npm_config_name",
+    "migration:revert": "npm run typeorm -- -d ./libs/dal/src/typeorm/typeorm.config.ts migration:revert",
+     "find-circular-deps": "madge . -c"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
@@ -32,8 +39,11 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
+    "eslint-plugin-import": "^2.29.1",
+    "madge": "^8.0.0",
     "nest-winston": "^1.9.7",
     "passport-jwt": "^4.0.1",
+    "pg": "^8.12.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20"

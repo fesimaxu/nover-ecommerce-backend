@@ -1,9 +1,15 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
-import { Base } from './base.entity';
-import { UserStatus } from 'src/user';
+import { Exclude } from 'class-transformer';
+import { UserStatus } from 'src/domain/user/user.enum';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
-export class Users extends Base {
+export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -13,6 +19,7 @@ export class Users extends Base {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar' })
   password: string;
 
@@ -21,4 +28,10 @@ export class Users extends Base {
 
   @Column({ type: 'varchar', default: 'UNBAN' })
   status: UserStatus;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }

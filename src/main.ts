@@ -4,18 +4,21 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { TransformInterceptor } from './core/incerceptor';
+import AppDataSource from './config/typeorm';
+import { GlobalExceptionFilter } from './core/middleware/filter.middleware';
 
-const { APP_ENV } = process.env;
+const { NODE_ENV } = process.env;
 const appName = 'Nover E-Commerce';
-const isCors = APP_ENV == 'production' ? true : false;
+const isCors = NODE_ENV == 'production' ? true : false;
 const logger = new Logger(`main.${appName}.bootstrap`);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: isCors });
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   const options = new DocumentBuilder()
     .setTitle('Nover E-Commerce')
@@ -24,12 +27,12 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api/swagger', app, document, {
+  SwaggerModule.setup('/nover/api/swagger', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
   });
-
+  AppDataSource.initialize();
   const port = process.env.PORT || 3000;
 
   await app.listen(port);
